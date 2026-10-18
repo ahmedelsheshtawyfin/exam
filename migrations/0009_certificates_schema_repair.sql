@@ -35,7 +35,7 @@ SELECT
   CAST(id AS TEXT), certificate_number, verification_token, CAST(attempt_id AS TEXT),
   CAST(user_id AS TEXT), CAST(exam_id AS TEXT), score, percentage, title,
   issued_by, type, level, format, duration, description,
-  COALESCE(skills, '[]'), issued_at, status, revoked_at, revocation_reason, created_at
+  COALESCE(skills_json, '[]'), issued_at, status, revoked_at, revocation_reason, created_at
 FROM certificates;
 
 DROP TABLE certificates;
