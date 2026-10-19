@@ -381,3 +381,24 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
 @media(max-width:600px){.af-video-player{border-radius:14px}.af-video-big-play{width:60px;height:60px}.af-video-big-play svg{width:24px;height:24px}.af-video-bar{gap:3px;padding:7px 8px 9px}.af-video-bar button{width:34px;height:34px;border-radius:9px}.af-video-bar button svg{width:18px;height:18px}.af-video-bar .af-video-volume{display:none}.af-video-time{font-size:11px}.af-video-cover-meta{bottom:12px}.af-video-cover-meta small{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.af-video-player *{transition:none!important}}
 
+
+/* My Learning dashboard: balanced responsive widths and readable task tables */
+.learning-dashboard-grid{grid-template-columns:minmax(0,1fr)!important;gap:24px!important;align-items:start}
+.learning-dashboard-section{min-width:0;width:100%;margin:30px 0}
+.learning-dashboard-section .learning-card-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px}
+.my-learning-card{min-width:0;min-height:230px;display:flex;flex-direction:column}
+.my-learning-card h3{font-size:clamp(18px,1.5vw,23px);line-height:1.35;overflow-wrap:anywhere}
+.learning-dashboard-section>.card{width:100%;min-width:0}
+.learning-dashboard-section .table-wrap{width:100%;overflow-x:auto;border-radius:12px}
+.learning-dashboard-section .table{width:100%;min-width:720px}
+.task-resource-link{display:inline-block;margin-top:6px;color:var(--orange);font-weight:700;font-size:12px;overflow-wrap:anywhere}
+.learning-section-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px}
+.learning-section-title-row h2{margin:0 0 6px}
+.learning-section-title-row p{margin:0}
+.learning-certificate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+.learning-certificate-card{display:grid;grid-template-columns:42px minmax(0,1fr);gap:14px;align-items:start;padding:20px;min-width:0}
+.learning-certificate-card .certificate-mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(231,119,45,.12);color:var(--orange);font-weight:800}
+.learning-certificate-card h3{margin:8px 0;overflow-wrap:anywhere}
+.learning-certificate-card .btn{grid-column:2;justify-self:start;max-width:100%;white-space:normal}
+.learning-certificate-card .small-text{overflow-wrap:anywhere}
+@media(max-width:760px){.learning-dashboard-section{margin:22px 0}.learning-dashboard-section .learning-card-grid{grid-template-columns:1fr}.my-learning-card{min-height:0}.learning-certificate-grid{grid-template-columns:1fr}.learning-certificate-card{padding:16px}.learning-dashboard-section .table{min-width:680px}}
