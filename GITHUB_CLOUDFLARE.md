@@ -5,7 +5,7 @@
 3. Select the GitHub repository.
 4. Keep the deployment command as `npx wrangler deploy` (or `npm run deploy`).
 5. Before the first successful deploy, replace `REPLACE_WITH_D1_DATABASE_ID` in `wrangler.toml` with the D1 database ID created in Cloudflare.
-6. Create the D1 database with the same name shown in `wrangler.toml`: `ahmed-finance-exam-db`.
+6. Create the D1 database with the same name shown in `wrangler.toml`: `ahmed`.
 7. Apply `migrations/0001_initial.sql` to the remote D1 database. You can use Cloudflare D1 Console to run the migration SQL, or Wrangler if you later use a local terminal.
 8. In Workers → Settings → Variables and Secrets, add `ADMIN_BOOTSTRAP_SECRET` as an encrypted secret.
 9. Deploy again.

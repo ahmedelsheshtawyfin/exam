@@ -86,7 +86,7 @@ npm install
 ### 2. Create D1
 
 ```bash
-npx wrangler d1 create ahmed-finance-exam-db
+npx wrangler d1 create ahmed
 ```
 
 Copy the returned database ID into `wrangler.toml`:
@@ -94,7 +94,7 @@ Copy the returned database ID into `wrangler.toml`:
 ```toml
 [[d1_databases]]
 binding = "DB"
-database_name = "ahmed-finance-exam-db"
+database_name = "ahmed"
 database_id = "YOUR_DATABASE_ID"
 migrations_dir = "migrations"
 ```
