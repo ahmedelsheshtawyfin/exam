@@ -1,0 +1,24 @@
+Ahmed Finance Learning Platform — Phase 1 update
+
+Updated files:
+- public/app.js
+- public/styles.css
+- src/worker.js
+
+What changed:
+1. Public course detail modal now presents a visual course overview, level/duration/module/lesson counts, a structured curriculum grouped by module, lesson types, and course resources.
+2. Admin → Courses → Content now displays modules and their lessons in a structured manager.
+3. Admin can edit module title, description, and sort order without deleting/recreating the module.
+4. Admin can edit lesson title, content/notes, type, resource URL, sort order, and move a lesson to another module.
+5. Admin can add lessons directly to a chosen module and delete individual lessons or modules.
+6. Added authenticated admin API PUT endpoints for updating modules and lessons.
+7. Modal behavior now replaces an existing modal rather than stacking multiple modal overlays.
+
+Validation performed:
+- `node --check public/app.js`
+- `node --check src/worker.js`
+
+Deployment note:
+- This package contains code changes only; it has not been deployed to Cloudflare.
+- No D1 migration is required for these changes.
+- Back up the project and deploy using the project's existing Cloudflare workflow after reviewing the changed files.
