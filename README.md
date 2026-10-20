@@ -199,6 +199,3 @@ The public landing page has been redesigned into the Ahmed Finance learning plat
 - A light theme as the default to match the existing portfolio identity.
 
 Course cards and skill-level visuals are currently presentation previews; course delivery, challenge enrollment/tasks, and skill-assessment scoring still need their own data models and APIs before they can be treated as live functionality. Existing exam assessments remain connected to the current backend.
-
-## Course resources — Phase 2
-See `PHASE_2_RESOURCES_SETUP.md` for the new course/module resource manager, the `0015_course_resource_files.sql` migration, and the optional Cloudflare R2 binding required for direct file uploads. External links are supported without R2.
