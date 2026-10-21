@@ -581,3 +581,14 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
  #modal .learning-detail-modal .learning-detail-action>.btn{width:100%;min-width:0}
  #modal .learning-detail-modal .learning-detail-action .actions{display:grid;grid-template-columns:1fr}
 }
+
+
+/* Fix clipped text inside expanded course/challenge accordions */
+#modal .learning-detail-modal .learning-detail-content{align-content:start;grid-auto-rows:max-content}
+#modal .learning-detail-modal .learning-accordion{height:auto;max-height:none;min-height:0;overflow:visible;flex:none;align-self:stretch}
+#modal .learning-detail-modal .learning-accordion[open]{height:auto;max-height:none;overflow:visible}
+#modal .learning-detail-modal .learning-accordion-body{display:block;height:auto;max-height:none;min-height:0;overflow:visible;white-space:normal;overflow-wrap:anywhere;padding-bottom:22px}
+#modal .learning-detail-modal .learning-accordion-body p{height:auto;max-height:none;overflow:visible;white-space:pre-wrap;line-height:1.85;margin:0 0 12px}
+#modal .learning-detail-modal .learning-accordion-body h4{line-height:1.4}
+#modal .learning-detail-modal .course-module-row{height:auto;max-height:none;overflow:visible}
+#modal .learning-detail-modal .course-module-row>div{height:auto;max-height:none;overflow:visible}
