@@ -760,3 +760,36 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
 #modal .task-detail-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding-top:4px}
 #modal .task-detail-actions .btn{min-width:130px}
 @media(max-width:560px){#modal .task-detail-modal{max-height:calc(100dvh - 16px);border-radius:16px}#modal .task-detail-hero{padding:19px 16px}#modal .task-detail-body{padding:13px;gap:10px}#modal .task-detail-meta-grid{grid-template-columns:1fr 1fr;gap:12px}#modal .task-detail-panel{padding:14px}#modal .task-detail-actions{display:grid;grid-template-columns:1fr}#modal .task-detail-actions .btn{width:100%}}
+
+
+
+/* Task detail modal: one predictable scroll area, readable content, and a visible close control */
+#modal:has(.task-detail-modal){padding:12px;place-items:center}
+#modal .modal:has(.task-detail-modal){width:min(1000px,96vw);max-width:1000px;max-height:calc(100dvh - 24px);height:auto;padding:0;overflow:hidden;display:flex;flex-direction:column}
+#modal .task-detail-modal{width:100%;max-height:calc(100dvh - 24px);min-height:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;border-radius:22px;background:var(--surface,#fffdf8);color:var(--ink,#0f2a24);scrollbar-gutter:stable}
+#modal .task-detail-hero{flex:0 0 auto;overflow:visible}
+#modal .task-detail-hero:after{pointer-events:none}
+#modal .task-detail-body{flex:0 0 auto;overflow:visible;min-height:0}
+#modal .task-detail-top .icon-btn{flex:0 0 44px;width:44px;height:44px;display:grid;place-items:center;background:#fffdf8;color:#102d26;border:2px solid #fffdf8;border-radius:12px;font-size:29px;line-height:1;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.15);cursor:pointer}
+#modal .task-detail-top .icon-btn:hover{background:#f15a24;color:#fff;border-color:#f15a24}
+#modal .task-detail-modal h2,#modal .task-detail-modal p,#modal .task-detail-modal b,#modal .task-detail-modal small{overflow-wrap:anywhere;word-break:normal}
+@media(max-width:560px){
+ #modal:has(.task-detail-modal){padding:8px}
+ #modal .modal:has(.task-detail-modal){width:100%;max-height:calc(100dvh - 16px);border-radius:16px}
+ #modal .task-detail-modal{max-height:calc(100dvh - 16px);border-radius:16px}
+ #modal .task-detail-hero{padding:18px 16px}
+ #modal .task-detail-top .icon-btn{width:42px;height:42px;flex-basis:42px}
+ #modal .task-detail-hero h2{font-size:clamp(23px,6vw,30px);line-height:1.25}
+ #modal .task-detail-hero>p{font-size:14px;line-height:1.75}
+}
+
+/* Prevent task action labels from collapsing into vertical text in narrow case-study cards */
+.learning-task-row{grid-template-columns:28px minmax(0,1fr) auto;min-width:0}
+.learning-task-row>b{min-width:0;overflow-wrap:anywhere;word-break:normal;line-height:1.5}
+.learning-task-row .btn,.learning-task-row button,.learning-task-row a{min-width:max-content;max-width:100%;white-space:normal;word-break:normal;overflow-wrap:normal;line-height:1.35;text-align:center}
+@media(max-width:700px){
+ .learning-task-row{grid-template-columns:26px minmax(0,1fr);align-items:start}
+ .learning-task-row>b{font-size:13px}
+ .learning-task-row>small{grid-column:2}
+ .learning-task-row .btn,.learning-task-row button,.learning-task-row a{grid-column:2;justify-self:start;min-width:0;width:auto;max-width:100%}
+}
