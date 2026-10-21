@@ -484,7 +484,7 @@ async function api(request,env,ctx){
           let certificate=null;
           let certificateError=null;
           let certificateEmail=null;
-          if(Number(existing.passed)===1 && a.exam_type!=='course' && Number(a.certificate_enabled??1)===1){
+          if(Number(existing.passed)===1 && Number(a.certificate_enabled??1)===1){
             try{
               certificate=await ensureCertificate(env,request,{attemptId:id,userId:s.user_id,examId:existing.exam_id,a,score:Number(existing.score),total:Number(existing.total_points),percentage:Number(existing.percentage)});
               if(certificate){const full=await getCertificateForAttempt(env,id);if(full)certificateEmail=await deliverCertificateEmail(env,request,full,{to:s.email||a.email,studentName:s.full_name||a.full_name,certificateTitle:a.certificate_title||`${a.title} Certificate`,examTitle:a.title,percentage:Number(existing.percentage),issuedAt:certificate.issuedAt});}
@@ -550,24 +550,23 @@ async function api(request,env,ctx){
       await env.DB.prepare(`UPDATE exam_attempts SET status='submitted',submitted_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();
 
       await env.DB.prepare(`INSERT INTO results(attempt_id,user_id,exam_id,score,total_points,percentage,passed) VALUES(?,?,?,?,?,?,?) ON CONFLICT(attempt_id) DO UPDATE SET score=excluded.score,total_points=excluded.total_points,percentage=excluded.percentage,passed=excluded.passed`).bind(id,s.user_id,a.exam_id,score,total,percentage,passed).run();
-      let courseCertificate=null;
-      if(passed){
-        const linkedCourses=await env.DB.prepare("SELECT c.id,c.title FROM courses c JOIN course_enrollments ce ON ce.course_id=c.id AND ce.user_id=? AND ce.status IN ('active','completed') WHERE c.final_exam_id=?").bind(s.user_id,a.exam_id).all();
+      // Passing a course final exam uses the same certificates table and renderer as skill assessments.
+      // Keep course enrollment completion separate from credential issuance; do not create a second
+      // learning_certificates record for this exam, which would create a parallel certificate system.
+      if(passed && a.exam_type==='course'){
+        const linkedCourses=await env.DB.prepare("SELECT c.id FROM courses c JOIN course_enrollments ce ON ce.course_id=c.id AND ce.user_id=? AND ce.status IN ('active','completed') WHERE c.final_exam_id=?").bind(s.user_id,a.exam_id).all();
         for(const course of (linkedCourses.results||[])){
           const lessonCount=await env.DB.prepare('SELECT COUNT(*) AS n FROM course_lessons l JOIN course_modules m ON m.id=l.module_id WHERE m.course_id=?').bind(course.id).first();
           const doneCount=await env.DB.prepare('SELECT COUNT(*) AS n FROM lesson_progress lp JOIN course_lessons l ON l.id=lp.lesson_id JOIN course_modules m ON m.id=l.module_id WHERE m.course_id=? AND lp.user_id=?').bind(course.id,s.user_id).first();
           if(Number(lessonCount?.n||0)>0&&Number(doneCount?.n||0)>=Number(lessonCount.n)){
-            const certNo=certificateNumber();
-            await env.DB.prepare('INSERT OR IGNORE INTO learning_certificates(certificate_number,user_id,source_type,source_id,title) VALUES(?,?,?,?,?)').bind(certNo,s.user_id,'course',course.id,course.title).run();
-            const issued=await env.DB.prepare("SELECT certificate_number,title,status,issued_at FROM learning_certificates WHERE user_id=? AND source_type='course' AND source_id=?").bind(s.user_id,course.id).first();
-            if(issued){courseCertificate={certificateNumber:issued.certificate_number,title:issued.title,status:issued.status,issuedAt:issued.issued_at,verificationUrl:new URL(request.url).origin+'/verify/'+encodeURIComponent(issued.certificate_number)};await env.DB.prepare("UPDATE course_enrollments SET status='completed',progress=100,completed_at=COALESCE(completed_at,CURRENT_TIMESTAMP) WHERE course_id=? AND user_id=?").bind(course.id,s.user_id).run();}
+            await env.DB.prepare("UPDATE course_enrollments SET status='completed',progress=100,completed_at=COALESCE(completed_at,CURRENT_TIMESTAMP) WHERE course_id=? AND user_id=?").bind(course.id,s.user_id).run();
           }
         }
       }
       let certificate=null;
       let certificateError=null;
       let certificateEmail=null;
-      if(passed && a.exam_type!=='course' && Number(a.certificate_enabled??1)===1){
+      if(passed && Number(a.certificate_enabled??1)===1){
         try{
           certificate=await ensureCertificate(env,request,{attemptId:id,userId:s.user_id,examId:a.exam_id,a,score,total,percentage});
           if(certificate){const full=await getCertificateForAttempt(env,id);if(full)certificateEmail=await deliverCertificateEmail(env,request,full,{to:s.email||a.email,studentName:s.full_name||a.full_name,certificateTitle:a.certificate_title||`${a.title} Certificate`,examTitle:a.title,percentage,issuedAt:certificate.issuedAt,siteOrigin:new URL(request.url).origin});}
@@ -576,7 +575,7 @@ async function api(request,env,ctx){
           console.error('CERTIFICATE ISSUE ERROR:',certificateError);
         }
       }
-      return json({ok:true,result:{score,totalPoints:total,percentage,passed,examTitle:a.title,examId:a.exam_id,passingPercentage:Number(a.passing_percentage),questionCount:qs.length,answeredCount:[...incoming.values()].filter(Boolean).length,submittedAt:new Date().toISOString(),certificate,courseCertificate,certificateError,certificateEmail}});
+      return json({ok:true,result:{score,totalPoints:total,percentage,passed,examTitle:a.title,examId:a.exam_id,passingPercentage:Number(a.passing_percentage),questionCount:qs.length,answeredCount:[...incoming.values()].filter(Boolean).length,submittedAt:new Date().toISOString(),certificate,certificateError,certificateEmail}});
     }catch(e){
       console.error('EXAM SUBMIT ERROR:',e?.message||e);
       return json({error:'Exam submission failed',details:String(e?.message||e)},500);
@@ -613,7 +612,7 @@ async function api(request,env,ctx){
     // result but no certificate yet, recover it here. Certificate failures are
     // isolated so the Results page itself never becomes a 500.
     let certificate=null;
-    if(Number(result.passed)===1 && result.exam_type!=='course'){
+    if(Number(result.passed)===1 && Number(result.certificate_enabled??1)===1){
       const existingCert=await env.DB.prepare(
         'SELECT certificate_number,status,show_answers FROM certificates WHERE attempt_id=?'
       ).bind(String(result.attempt_id)).first();
