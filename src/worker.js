@@ -279,7 +279,7 @@ async function ensureCertificate(env,request,{attemptId,userId,examId,a,score,to
   const issuedAt=new Date().toISOString();
   await env.DB.prepare(`INSERT INTO certificates(id,certificate_number,verification_token,attempt_id,user_id,exam_id,score,percentage,title,issued_by,type,level,format,duration,description,skills,issued_at,status,show_answers,email_status,email_attempts) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
     .bind(certId,certNo,token,String(attemptId),String(userId),String(examId),score,percentage,
-      clean(a.certificate_title||`${a.title} Certificate`,200),
+      clean(a.certificate_title||a.title||'Untitled',200),
       clean(a.certificate_issued_by||'Ahmed Elsheshtawy',200),
       clean(a.certificate_type||'Training',80),
       clean(a.certificate_level||'Intermediate',80),
@@ -291,6 +291,9 @@ async function ensureCertificate(env,request,{attemptId,userId,examId,a,score,to
 }
 function htmlEscape(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\"','&quot;').replaceAll("'",'&#39;')}
 function credentialPage(c,request){
+  // Older releases automatically appended ' Certificate' to the exam title.
+  // Remove that legacy suffix only when it is an exact generated match; preserve custom titles.
+  if(c?.exam_title && c.title === `${c.exam_title} Certificate`) c.title = c.exam_title;
   const origin=new URL(request.url).origin;
   const verify=`${origin}/verify/${encodeURIComponent(c.certificate_number)}`;
   const assessment=`${origin}/certificate-exam/${encodeURIComponent(c.certificate_number)}`;
@@ -371,7 +374,8 @@ async function api(request,env,ctx){
       WHERE upper(c.certificate_number)=?
     `).bind(number).first();
     if(!cert){const learning=await env.DB.prepare('SELECT lc.certificate_number,lc.status,lc.title,lc.issued_at,lc.source_type,u.full_name AS student_name FROM learning_certificates lc JOIN users u ON u.id=lc.user_id WHERE upper(lc.certificate_number)=?').bind(number).first();if(!learning)return bad('Certificate ID not found',404);return json({verified:true,certificate:{id:learning.certificate_number,status:learning.status,title:learning.title,recipient:learning.student_name,issuedAt:learning.issued_at,issuedBy:'Ahmed Elsheshtawy',assessment:learning.source_type==='course'?'Course completion':'Challenge completion',type:'Learning achievement',level:'Completion',format:'Online',duration:''}})}
-    return json({verified:true,certificate:{id:cert.certificate_number,status:cert.status,title:cert.title,recipient:cert.student_name,issuedAt:cert.issued_at,issuedBy:cert.issued_by||'Ahmed Elsheshtawy',assessment:cert.exam_title,type:cert.type,level:cert.level,format:cert.format,duration:cert.duration}});
+    const displayTitle=cert.exam_title && cert.title===`${cert.exam_title} Certificate` ? cert.exam_title : cert.title;
+    return json({verified:true,certificate:{id:cert.certificate_number,status:cert.status,title:displayTitle,recipient:cert.student_name,issuedAt:cert.issued_at,issuedBy:cert.issued_by||'Ahmed Elsheshtawy',assessment:cert.exam_title,type:cert.type,level:cert.level,format:cert.format,duration:cert.duration}});
   }
   if(m==='GET'&&p.match(/^\/api\/public\/certificate-exam\/[^/]+$/)){
     const number=decodeURIComponent(p.split('/')[4]||'');
@@ -472,7 +476,7 @@ async function api(request,env,ctx){
     }
 
     try{
-      const a=await env.DB.prepare(`SELECT a.*,e.passing_percentage,e.duration_minutes,e.title,e.description,e.exam_type,e.course_id,e.certificate_enabled,e.certificate_issued_by,e.certificate_type,e.certificate_level,e.certificate_format,e.certificate_duration,e.certificate_description,e.certificate_skills_json FROM exam_attempts a JOIN exams e ON e.id=a.exam_id WHERE a.id=? AND a.user_id=?`).bind(id,s.user_id).first();
+      const a=await env.DB.prepare(`SELECT a.*,e.passing_percentage,e.duration_minutes,e.title,e.description,e.exam_type,e.course_id,e.certificate_enabled,e.certificate_title,e.certificate_issued_by,e.certificate_type,e.certificate_level,e.certificate_format,e.certificate_duration,e.certificate_description,e.certificate_skills_json FROM exam_attempts a JOIN exams e ON e.id=a.exam_id WHERE a.id=? AND a.user_id=?`).bind(id,s.user_id).first();
 
       if(!a)return bad('Attempt not found',404);
 
@@ -487,7 +491,7 @@ async function api(request,env,ctx){
           if(Number(existing.passed)===1 && Number(a.certificate_enabled??1)===1){
             try{
               certificate=await ensureCertificate(env,request,{attemptId:id,userId:s.user_id,examId:existing.exam_id,a,score:Number(existing.score),total:Number(existing.total_points),percentage:Number(existing.percentage)});
-              if(certificate){const full=await getCertificateForAttempt(env,id);if(full)certificateEmail=await deliverCertificateEmail(env,request,full,{to:s.email||a.email,studentName:s.full_name||a.full_name,certificateTitle:a.certificate_title||`${a.title} Certificate`,examTitle:a.title,percentage:Number(existing.percentage),issuedAt:certificate.issuedAt});}
+              if(certificate){const full=await getCertificateForAttempt(env,id);if(full)certificateEmail=await deliverCertificateEmail(env,request,full,{to:s.email||a.email,studentName:s.full_name||a.full_name,certificateTitle:a.certificate_title||a.title,examTitle:a.title,percentage:Number(existing.percentage),issuedAt:certificate.issuedAt});}
             }catch(certError){
               certificateError=String(certError?.message||certError);
               console.error('CERTIFICATE ISSUE ERROR:',certificateError);
@@ -569,7 +573,7 @@ async function api(request,env,ctx){
       if(passed && Number(a.certificate_enabled??1)===1){
         try{
           certificate=await ensureCertificate(env,request,{attemptId:id,userId:s.user_id,examId:a.exam_id,a,score,total,percentage});
-          if(certificate){const full=await getCertificateForAttempt(env,id);if(full)certificateEmail=await deliverCertificateEmail(env,request,full,{to:s.email||a.email,studentName:s.full_name||a.full_name,certificateTitle:a.certificate_title||`${a.title} Certificate`,examTitle:a.title,percentage,issuedAt:certificate.issuedAt,siteOrigin:new URL(request.url).origin});}
+          if(certificate){const full=await getCertificateForAttempt(env,id);if(full)certificateEmail=await deliverCertificateEmail(env,request,full,{to:s.email||a.email,studentName:s.full_name||a.full_name,certificateTitle:a.certificate_title||a.title,examTitle:a.title,percentage,issuedAt:certificate.issuedAt,siteOrigin:new URL(request.url).origin});}
         }catch(certError){
           certificateError=String(certError?.message||certError);
           console.error('CERTIFICATE ISSUE ERROR:',certificateError);
@@ -634,7 +638,7 @@ async function api(request,env,ctx){
             total:Number(result.total_points),
             percentage:Number(result.percentage)
           });
-          if(certificate){const full=await getCertificateForAttempt(env,result.attempt_id);if(full){const emailTask=deliverCertificateEmail(env,request,full,{to:result.email||s.email,studentName:result.full_name||s.full_name,certificateTitle:result.certificate_title||`${result.title} Certificate`,examTitle:result.title,percentage:Number(result.percentage),issuedAt:certificate.issuedAt||result.issued_at});if(ctx?.waitUntil)ctx.waitUntil(emailTask);else await emailTask;}}
+          if(certificate){const full=await getCertificateForAttempt(env,result.attempt_id);if(full){const emailTask=deliverCertificateEmail(env,request,full,{to:result.email||s.email,studentName:result.full_name||s.full_name,certificateTitle:result.certificate_title||result.title,examTitle:result.title,percentage:Number(result.percentage),issuedAt:certificate.issuedAt||result.issued_at});if(ctx?.waitUntil)ctx.waitUntil(emailTask);else await emailTask;}}
         }catch(certError){
           console.error('CERTIFICATE RECOVERY ERROR:',certError?.message||certError);
           certificate=null;
@@ -666,9 +670,61 @@ async function api(request,env,ctx){
   }
   if(m==='GET'&&p==='/api/certificates'){
     if(!userSession(s))return bad('Unauthorized',401);
+    // Recover certificates for passed course final exams from before the unified
+    // certificate flow was deployed. This is idempotent: ensureCertificate checks
+    // attempt_id, so refreshing the page cannot create duplicate credentials.
+    const missingCourseCertificates=await env.DB.prepare(`
+      SELECT r.attempt_id,r.user_id,r.exam_id,r.score,r.total_points,r.percentage,
+             u.full_name,u.email,
+             e.title,e.description,e.certificate_enabled,e.certificate_title,
+             e.certificate_issued_by,e.certificate_type,e.certificate_level,
+             e.certificate_format,e.certificate_duration,e.certificate_description,
+             e.certificate_skills_json
+      FROM results r
+      JOIN exams e ON e.id=r.exam_id
+      JOIN users u ON u.id=r.user_id
+      WHERE r.user_id=? AND r.passed=1
+        AND (e.exam_type='course' OR e.course_id IS NOT NULL
+             OR EXISTS (SELECT 1 FROM courses linked_course WHERE linked_course.final_exam_id=e.id))
+        AND COALESCE(e.certificate_enabled,1)=1
+        AND NOT EXISTS (SELECT 1 FROM certificates c WHERE c.attempt_id=r.attempt_id)
+      ORDER BY r.created_at DESC
+    `).bind(s.user_id).all();
+    for(const passedCourseExam of (missingCourseCertificates.results||[])){
+      try{
+        const issued=await ensureCertificate(env,request,{
+          attemptId:passedCourseExam.attempt_id,
+          userId:passedCourseExam.user_id,
+          examId:passedCourseExam.exam_id,
+          a:passedCourseExam,
+          score:Number(passedCourseExam.score||0),
+          total:Number(passedCourseExam.total_points||0),
+          percentage:Number(passedCourseExam.percentage||0)
+        });
+        if(issued?.created){
+          const full=await getCertificateForAttempt(env,passedCourseExam.attempt_id);
+          if(full)await deliverCertificateEmail(env,request,full,{
+            to:passedCourseExam.email,
+            studentName:passedCourseExam.full_name,
+            certificateTitle:passedCourseExam.certificate_title||passedCourseExam.title,
+            examTitle:passedCourseExam.title,
+            percentage:Number(passedCourseExam.percentage||0),
+            issuedAt:issued.issuedAt,
+            siteOrigin:new URL(request.url).origin
+          });
+        }
+      }catch(certificateRecoveryError){
+        console.error('COURSE CERTIFICATE RECOVERY ERROR',String(certificateRecoveryError?.message||certificateRecoveryError));
+      }
+    }
     const rows=await env.DB.prepare(`
-      SELECT c.id,c.certificate_number,c.status,c.issued_at,c.score,c.percentage,c.title,
-             e.title AS exam_title,r.id AS result_id
+      SELECT c.id,c.certificate_number,c.status,c.issued_at,c.score,c.percentage,
+             CASE WHEN c.title = e.title || ' Certificate' THEN e.title ELSE c.title END AS title,
+             e.title AS exam_title,
+             CASE WHEN e.exam_type='course' OR e.course_id IS NOT NULL
+                       OR EXISTS (SELECT 1 FROM courses linked_course WHERE linked_course.final_exam_id=e.id)
+                  THEN 'course' ELSE COALESCE(e.exam_type,'assessment') END AS exam_type,
+             r.id AS result_id
       FROM certificates c
       LEFT JOIN results r ON r.attempt_id=c.attempt_id AND r.user_id=c.user_id
       LEFT JOIN exams e ON e.id=c.exam_id
@@ -943,12 +999,12 @@ async function api(request,env,ctx){
       const c=await env.DB.prepare('SELECT c.*,u.full_name AS student_name,u.email AS student_email,e.title AS exam_title FROM certificates c JOIN users u ON u.id=c.user_id JOIN exams e ON e.id=c.exam_id WHERE c.id=?').bind(id).first();
       if(!c)return bad('Certificate not found',404);
       if(!emailOK(c.student_email))return bad('Student email is invalid or missing');
-      const result=await deliverCertificateEmail(env,request,c,{to:c.student_email,studentName:c.student_name,certificateTitle:c.title||`${c.exam_title} Certificate`,examTitle:c.exam_title,percentage:Number(c.percentage||0),issuedAt:c.issued_at,force:true,siteOrigin:new URL(request.url).origin});
+      const result=await deliverCertificateEmail(env,request,c,{to:c.student_email,studentName:c.student_name,certificateTitle:c.title||c.exam_title,examTitle:c.exam_title,percentage:Number(c.percentage||0),issuedAt:c.issued_at,force:true,siteOrigin:new URL(request.url).origin});
       return json({ok:!!result.sent,...result},200);
     }
     if(m==='POST'&&p==='/api/admin/certificates/send-pending'){
       const rows=await env.DB.prepare("SELECT c.*,u.full_name AS student_name,u.email AS student_email,e.title AS exam_title FROM certificates c JOIN users u ON u.id=c.user_id JOIN exams e ON e.id=c.exam_id WHERE COALESCE(c.email_status,'not_sent') IN ('not_sent','failed') ORDER BY c.issued_at ASC LIMIT 100").all();
-      const results=[];for(const c of (rows.results||[])){if(!emailOK(c.student_email)){results.push({id:c.id,sent:false,error:'Invalid or missing student email'});continue;}results.push({id:c.id,...await deliverCertificateEmail(env,request,c,{to:c.student_email,studentName:c.student_name,certificateTitle:c.title||`${c.exam_title} Certificate`,examTitle:c.exam_title,percentage:Number(c.percentage||0),issuedAt:c.issued_at,siteOrigin:new URL(request.url).origin})});}
+      const results=[];for(const c of (rows.results||[])){if(!emailOK(c.student_email)){results.push({id:c.id,sent:false,error:'Invalid or missing student email'});continue;}results.push({id:c.id,...await deliverCertificateEmail(env,request,c,{to:c.student_email,studentName:c.student_name,certificateTitle:c.title||c.exam_title,examTitle:c.exam_title,percentage:Number(c.percentage||0),issuedAt:c.issued_at,siteOrigin:new URL(request.url).origin})});}
       return json({ok:true,total:results.length,sent:results.filter(x=>x.sent).length,failed:results.filter(x=>!x.sent).length,results});
     }
     if(m==='POST'&&p.match(/^\/api\/admin\/certificates\/[^/]+\/revoke$/)){const id=clean(p.split('/')[4],100),b=await body(request);if(!id)return bad('Invalid certificate');await env.DB.prepare("UPDATE certificates SET status='revoked',revoked_at=CURRENT_TIMESTAMP,revocation_reason=? WHERE id=?").bind(clean(b?.reason,500),id).run();return json({ok:true})}
