@@ -646,3 +646,25 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
 .case-lab-text-section .case-lab-section-body h3{display:none}
 .case-lab-text-section .case-lab-section-body p{max-width:none}
 @media(max-width:700px){.case-lab-detail-grid{padding-left:20px!important;padding-right:20px!important}.case-lab-files{grid-template-columns:minmax(0,1fr)!important}}
+
+
+/* Approved Case Lab detail style: match the reference image, without CASE OVERVIEW panel */
+.case-lab-modal{width:min(1380px,calc(100vw - 48px));margin:0 auto;max-height:calc(100dvh - 48px);overflow-x:hidden;overflow-y:auto;background:#f5f2eb;border-radius:28px;color:#111;box-shadow:0 28px 90px rgba(0,0,0,.28)}
+.case-lab-modal-top{padding:28px clamp(22px,4vw,56px) 26px}
+.case-lab-kicker{margin-top:28px;color:#ff5722;font-size:11px;letter-spacing:.15em;font-weight:900}
+.case-lab-modal-top h2{overflow-wrap:anywhere}
+.case-lab-detail-grid{padding:0 clamp(22px,4vw,56px) 36px}
+.case-lab-files-section{margin:0 0 8px!important;border:1px solid #242424;border-radius:16px;overflow:hidden;background:#111}
+.case-lab-files-section .case-lab-section-head{background:#080808;color:#f4f1e9;padding:15px 18px}
+.case-lab-files{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px;gap:8px}
+.case-lab-file{min-height:64px;display:flex;align-items:center;gap:12px;background:#151515;border:1px solid #292929;border-radius:10px;padding:14px;color:#fff;text-decoration:none}
+.case-lab-file-copy{flex:1;min-width:0}
+.case-lab-file-copy b{overflow-wrap:anywhere}
+.case-lab-text-section{padding:22px 0 24px;border-bottom:1px solid #ded8cc}
+.case-lab-text-section:first-child{border-top:1px solid #ded8cc}
+.case-lab-text-section .case-lab-section-head{color:#f05a1a;background:transparent;padding:0 0 11px;font-size:11px;font-weight:900;letter-spacing:.13em}
+.case-lab-text-section .case-lab-section-head b{color:#85857d}
+.case-lab-text-section .case-lab-section-body{padding:0;min-height:0}
+.case-lab-text-section .case-lab-section-body h3{display:none}
+.case-lab-text-section .case-lab-section-body p{max-width:none;color:#4f5d67;font-size:15px;line-height:1.9;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:700px){.case-lab-modal{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:18px}.case-lab-modal-top{padding:20px 20px 22px}.case-lab-detail-grid{padding:0 20px 28px}.case-lab-files{grid-template-columns:minmax(0,1fr)}.case-lab-text-section{padding:19px 0 21px}.case-lab-text-section .case-lab-section-body p{font-size:14px}}
