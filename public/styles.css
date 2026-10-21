@@ -793,3 +793,9 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
  .learning-task-row>small{grid-column:2}
  .learning-task-row .btn,.learning-task-row button,.learning-task-row a{grid-column:2;justify-self:start;min-width:0;width:auto;max-width:100%}
 }
+
+/* Keep long task instructions compact in the student task grid; full text remains in task details. */
+.task-card-clickable{min-width:0;overflow:hidden}
+.task-card-clickable>h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;line-height:1.35;min-height:2.7em}
+.task-card-clickable>p:not(.small-text){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;overflow-wrap:anywhere;line-height:1.65;min-height:4.95em;max-height:4.95em;margin-bottom:14px}
+.task-card-clickable .card-full-btn{white-space:normal}
