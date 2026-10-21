@@ -997,6 +997,8 @@ export default {async fetch(request,env,ctx){try{
     return new Response(credentialPage(c,request),{status:200,headers:{'content-type':'text/html;charset=UTF-8','cache-control':'no-store'}});
   }
   if(path.match(/^\/exam-review\/\d+\/?$/))return env.ASSETS.fetch(new Request(new URL('/index.html',request.url),request));
+  // Serve the SPA entry point for student routes so direct navigation and refresh work.
+  if(/^\/(?:dashboard|courses|challenges|tasks|results|assessments|certificates)\/?$/.test(path))return env.ASSETS.fetch(new Request(new URL('/index.html',request.url),request));
   const assessmentMatch=path.match(/^\/certificate-exam\/([^/]+)\/?$/);
   if(assessmentMatch){
     const certificateNumber=decodeURIComponent(assessmentMatch[1]);
