@@ -813,3 +813,26 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
 .course-module-resources-label{padding:10px 10px 5px;margin-top:4px;border-top:1px dashed var(--line);font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.course-player-resource-row{display:grid;grid-template-columns:25px minmax(0,1fr) 18px;align-items:center;gap:8px;padding:9px;border-radius:9px;text-decoration:none;color:var(--text);border:1px solid transparent}.course-player-resource-row:hover{background:var(--surface2);border-color:var(--line)}.course-resource-type-icon{width:23px;height:23px;display:grid;place-items:center;border-radius:7px;background:rgba(231,119,45,.1);color:var(--orange);font-size:13px}.course-resource-open-icon{font-size:12px;color:var(--muted)}.course-player-resource-row .course-player-lesson-copy b{font-size:11px}.course-player-resource-row .course-player-lesson-copy small{font-size:9px}.lesson-type-icon{border-radius:7px;font-size:11px}
 
 .course-module-curriculum-items{display:grid;gap:4px;padding:6px 10px 12px}.course-curriculum-item{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:9px;align-items:center;padding:10px;border-radius:9px;color:var(--text);text-decoration:none;font-size:12px;border:1px solid transparent}.course-curriculum-item:not(a){cursor:default}.course-curriculum-resource:hover{background:var(--surface2);border-color:var(--line)}.course-curriculum-icon{width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:var(--surface2);color:var(--orange);font-size:12px}.course-curriculum-item small{font-size:10px;color:var(--muted);text-transform:capitalize}.course-general-resources{margin-top:6px}
+
+/* Course resources as first-class learning pages */
+.course-resource-page-link{width:100%;text-align:start;cursor:pointer;background:transparent;border:0;font:inherit}
+.course-resource-page-link:hover{background:rgba(229,57,53,.055)}
+.course-resource-detail-page{max-width:900px;margin:34px auto 70px;padding:clamp(22px,4vw,48px);background:var(--card,#fff);border:1px solid var(--line,#e5e3df);border-radius:24px;box-shadow:0 18px 55px rgba(32,33,36,.06)}
+.course-resource-detail-kicker{font-size:11px;letter-spacing:.16em;font-weight:800;color:#e53935;margin-bottom:14px}
+.course-resource-detail-page>h1{font-size:clamp(28px,4vw,42px);margin:0 0 10px;letter-spacing:-.035em}
+.course-resource-detail-page>p{color:var(--muted,#777);margin:0 0 28px;line-height:1.7}
+.course-resource-detail-list{display:grid;gap:12px;margin-bottom:28px}
+.course-resource-download-card{display:flex;align-items:center;gap:16px;padding:18px;border:1px solid var(--line,#e5e3df);border-radius:16px;background:#fff;transition:border-color .2s,transform .2s}
+.course-resource-download-card:hover{border-color:#e53935;transform:translateY(-1px)}
+.course-resource-download-card.is-selected{border-color:#e53935;background:#fffdfc}
+.course-resource-download-icon{display:grid;place-items:center;flex:0 0 48px;height:52px;border-radius:13px;background:#f8eeeb;color:#b71c1c;font-size:22px}
+.course-resource-download-copy{flex:1;min-width:0}
+.course-resource-download-copy small{font-size:10px;letter-spacing:.1em;color:#8a8a8a;text-transform:uppercase}
+.course-resource-download-copy h3{font-size:16px;margin:5px 0}
+.course-resource-download-copy p{font-size:12px;color:#8a8a8a;margin:0}
+.course-final-exam-module{margin-top:18px;border:1px solid rgba(229,57,53,.25);border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#fff 0%,#fff8f6 100%)}
+.course-final-exam-module>.course-player-module-title{padding:18px;background:transparent}
+.course-final-exam-module>.course-player-module-title>span{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#202124;color:#fff;font-size:11px;font-weight:800}
+.course-final-exam-module .course-player-lesson-list{padding:0 18px 18px}
+.course-final-exam-module .course-player-lesson-copy{padding:16px;background:#fff;border:1px solid #eee6e3;border-radius:12px;margin-bottom:12px}
+@media(max-width:600px){.course-resource-download-card{align-items:flex-start;flex-wrap:wrap;padding:14px}.course-resource-download-card .btn{width:100%;justify-content:center}.course-resource-detail-page{margin:18px 0 36px;padding:20px;border-radius:18px}}
