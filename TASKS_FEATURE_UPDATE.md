@@ -1,19 +1,12 @@
-# Required Tasks for Student Challenges
+# Required Tasks Workspace Update
 
-This update adds a student-facing task workflow to the existing learning platform.
+- Added a dedicated student Tasks page at `/tasks`, linked from the dashboard.
+- Dashboard task tile shows the remaining required-task count and opens the unified task workspace.
+- Unified workspace includes required tasks from enrolled courses, joined challenges, and published case studies, with status, due date, points, resource links, and submission/update actions.
+- My Challenges cards now show related task counts and quick submission actions; challenge details also show task resource links.
+- Published case-study details show their required tasks. Case-linked tasks can be submitted by signed-in students without requiring course/challenge enrollment.
+- Student learning API includes case-study task counts and case task submissions.
+- Admin task list now displays the related case study and supports assigning tasks to a course, challenge, or case study.
+- No new database migration was added; the existing `learning_tasks.case_study_id`, `resource_url`, and submission tables are reused.
 
-## Included
-- A required-task count and remaining-task count on the student dashboard.
-- A dashboard shortcut to the dedicated `/challenges` student workspace.
-- A challenge workspace showing each joined challenge, its required-task count, submitted/remaining totals, due dates, resource links, submission state, and instructor feedback.
-- Task submission uses the existing `/api/learning/tasks/:id/submit` endpoint and the existing task-submission modal.
-- Submission refreshes the currently open student task view.
-- Responsive styling for desktop and mobile, matching the Ahmed Finance design system.
-
-## Data and migration
-No new database schema is introduced. The feature uses the existing `learning_tasks` and `task_submissions` tables and `/api/student/learning` response. Ensure all existing project migrations, including `0014_task_resource_url.sql`, have been applied to the target D1 database.
-
-## Validation performed
-- `node --check public/app.js` passed.
-- The ZIP was created from the full project source.
-- The deployed Cloudflare Worker and live D1 database were not changed or remotely tested by this package build.
+Validation: `node --check public/app.js` and `node --check src/worker.js` passed. Runtime behavior against the production Cloudflare D1 database has not been exercised from this local package.
