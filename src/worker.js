@@ -666,9 +666,54 @@ async function api(request,env,ctx){
   }
   if(m==='GET'&&p==='/api/certificates'){
     if(!userSession(s))return bad('Unauthorized',401);
+    // Recover certificates for passed course final exams from before the unified
+    // certificate flow was deployed. This is idempotent: ensureCertificate checks
+    // attempt_id, so refreshing the page cannot create duplicate credentials.
+    const missingCourseCertificates=await env.DB.prepare(`
+      SELECT r.attempt_id,r.user_id,r.exam_id,r.score,r.total_points,r.percentage,
+             u.full_name,u.email,
+             e.title,e.description,e.certificate_enabled,e.certificate_title,
+             e.certificate_issued_by,e.certificate_type,e.certificate_level,
+             e.certificate_format,e.certificate_duration,e.certificate_description,
+             e.certificate_skills_json
+      FROM results r
+      JOIN exams e ON e.id=r.exam_id
+      JOIN users u ON u.id=r.user_id
+      WHERE r.user_id=? AND r.passed=1 AND e.exam_type='course'
+        AND COALESCE(e.certificate_enabled,1)=1
+        AND NOT EXISTS (SELECT 1 FROM certificates c WHERE c.attempt_id=r.attempt_id)
+      ORDER BY r.created_at DESC
+    `).bind(s.user_id).all();
+    for(const passedCourseExam of (missingCourseCertificates.results||[])){
+      try{
+        const issued=await ensureCertificate(env,request,{
+          attemptId:passedCourseExam.attempt_id,
+          userId:passedCourseExam.user_id,
+          examId:passedCourseExam.exam_id,
+          a:passedCourseExam,
+          score:Number(passedCourseExam.score||0),
+          total:Number(passedCourseExam.total_points||0),
+          percentage:Number(passedCourseExam.percentage||0)
+        });
+        if(issued?.created){
+          const full=await getCertificateForAttempt(env,passedCourseExam.attempt_id);
+          if(full)await deliverCertificateEmail(env,request,full,{
+            to:passedCourseExam.email,
+            studentName:passedCourseExam.full_name,
+            certificateTitle:passedCourseExam.certificate_title||`${passedCourseExam.title} Certificate`,
+            examTitle:passedCourseExam.title,
+            percentage:Number(passedCourseExam.percentage||0),
+            issuedAt:issued.issuedAt,
+            siteOrigin:new URL(request.url).origin
+          });
+        }
+      }catch(certificateRecoveryError){
+        console.error('COURSE CERTIFICATE RECOVERY ERROR',String(certificateRecoveryError?.message||certificateRecoveryError));
+      }
+    }
     const rows=await env.DB.prepare(`
       SELECT c.id,c.certificate_number,c.status,c.issued_at,c.score,c.percentage,c.title,
-             e.title AS exam_title,r.id AS result_id
+             e.title AS exam_title,e.exam_type,r.id AS result_id
       FROM certificates c
       LEFT JOIN results r ON r.attempt_id=c.attempt_id AND r.user_id=c.user_id
       LEFT JOIN exams e ON e.id=c.exam_id
