@@ -799,3 +799,12 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
 .task-card-clickable>h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;line-height:1.35;min-height:2.7em}
 .task-card-clickable>p:not(.small-text){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;overflow-wrap:anywhere;line-height:1.65;min-height:4.95em;max-height:4.95em;margin-bottom:14px}
 .task-card-clickable .card-full-btn{white-space:normal}
+
+/* Multiple named resources for learning tasks */
+#taskResourceRows{display:grid;gap:10px}
+.task-resource-row{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) auto}
+#modal .task-detail-resource-list{display:grid;gap:10px}
+#modal .task-detail-resource{min-width:0;background:#fffefa}
+#modal .task-detail-resource small{display:block;overflow-wrap:anywhere;word-break:break-word}
+#modal .task-detail-resource>strong{font-size:11px;white-space:nowrap}
+@media(max-width:700px){.task-resource-row{grid-template-columns:minmax(0,1fr)}.task-resource-row>.btn{width:100%}#modal .task-detail-resource{align-items:flex-start;gap:9px;padding:11px}#modal .task-detail-resource-icon{flex-basis:34px;height:34px}#modal .task-detail-resource>strong{font-size:10px}}
