@@ -679,7 +679,9 @@ async function api(request,env,ctx){
       FROM results r
       JOIN exams e ON e.id=r.exam_id
       JOIN users u ON u.id=r.user_id
-      WHERE r.user_id=? AND r.passed=1 AND e.exam_type='course'
+      WHERE r.user_id=? AND r.passed=1
+        AND (e.exam_type='course' OR e.course_id IS NOT NULL
+             OR EXISTS (SELECT 1 FROM courses linked_course WHERE linked_course.final_exam_id=e.id))
         AND COALESCE(e.certificate_enabled,1)=1
         AND NOT EXISTS (SELECT 1 FROM certificates c WHERE c.attempt_id=r.attempt_id)
       ORDER BY r.created_at DESC
@@ -713,7 +715,11 @@ async function api(request,env,ctx){
     }
     const rows=await env.DB.prepare(`
       SELECT c.id,c.certificate_number,c.status,c.issued_at,c.score,c.percentage,c.title,
-             e.title AS exam_title,e.exam_type,r.id AS result_id
+             e.title AS exam_title,
+             CASE WHEN e.exam_type='course' OR e.course_id IS NOT NULL
+                       OR EXISTS (SELECT 1 FROM courses linked_course WHERE linked_course.final_exam_id=e.id)
+                  THEN 'course' ELSE COALESCE(e.exam_type,'assessment') END AS exam_type,
+             r.id AS result_id
       FROM certificates c
       LEFT JOIN results r ON r.attempt_id=c.attempt_id AND r.user_id=c.user_id
       LEFT JOIN exams e ON e.id=c.exam_id
