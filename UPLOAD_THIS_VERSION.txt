@@ -1,5 +1,4 @@
-Excam Certificate Email Redesign v35
+Updated source package: course curriculum resources + YouTube player fix (2026-10-21).
 
-This version keeps the v34 light email layout and content, but replaces the social icons with complete 44x44 PNG icon buttons. The entire button (circle + icon) is now one image inside the link, preventing Gmail desktop from rendering the icons incorrectly or showing link/baseline artifacts.
-
-Mobile layout is preserved; only the social icon implementation was changed.
+IMPORTANT: Before deploying, apply migrations/0018_course_resources_module.sql once to the production D1 database. Then deploy src/worker.js and public/.
+See COURSE_CURRICULUM_VIDEO_FIX_2026-10-21.md for details.
