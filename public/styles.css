@@ -537,3 +537,47 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
  #modal .modal .actions,#modal .modal .form-actions{display:grid;grid-template-columns:1fr}
  #modal .modal .actions .btn,#modal .modal .form-actions .btn{width:100%}
 }
+
+
+/* Case Lab admin resources use the same name + URL rows as assessment attachments */
+.case-resource-manager{border:1px solid var(--line,#e3dccb);border-radius:14px;padding:14px;background:rgba(246,243,234,.45)}
+.case-resource-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.case-resource-heading label{font-size:13px;font-weight:800;color:var(--ink,#0f2a24)}
+.case-resource-heading p{margin:4px 0 0}
+#caseResourceRows{display:grid;gap:10px}
+.case-resource-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) auto;gap:12px;align-items:end;padding:13px;border:1px solid var(--line,#e3dccb);border-radius:12px;background:#fffdf8}
+.case-resource-row .field{min-width:0}
+.case-resource-row .field label{font-size:11px}
+.case-resource-row input{width:100%;min-width:0}
+.case-resource-row>.btn{margin-bottom:1px;white-space:nowrap}
+@media(max-width:700px){.case-resource-heading{align-items:flex-start;flex-direction:column}.case-resource-row{grid-template-columns:minmax(0,1fr)}.case-resource-row>.btn{width:100%}}
+
+
+/* Course/challenge detail modal: correct viewport sizing and remove nested scrollbars */
+#modal:has(.learning-detail-modal){padding:24px;display:grid;place-items:center;overflow:hidden}
+#modal .modal:has(.learning-detail-modal){box-sizing:border-box;width:min(1040px,calc(100vw - 48px));max-width:1040px;height:min(800px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);min-height:0;padding:0;overflow:hidden;display:flex;flex-direction:column;border-radius:24px}
+#modal .modal:has(.learning-detail-modal)>.learning-detail-modal{box-sizing:border-box;width:100%;height:100%;max-height:none;min-height:0;flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column;border-radius:24px}
+#modal .learning-detail-modal .learning-detail-hero{flex:0 0 auto;padding:clamp(20px,2.5vw,30px) clamp(22px,3vw,34px) 20px}
+#modal .learning-detail-modal .learning-detail-hero-copy{margin:20px 0 16px}
+#modal .learning-detail-modal .learning-detail-meta{display:flex;flex-wrap:wrap;gap:8px}
+#modal .learning-detail-modal .learning-detail-content{box-sizing:border-box;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:20px clamp(22px,3vw,34px) 0;gap:12px;overscroll-behavior:contain;scrollbar-gutter:stable}
+#modal .learning-detail-modal .learning-detail-action{position:sticky;bottom:0;z-index:3;margin:0 -1px;padding:14px 1px 18px;background:linear-gradient(to bottom,rgba(255,253,248,.88),#fffdf8 24%);border-top:1px solid rgba(227,220,203,.8)}
+#modal .learning-detail-modal .learning-detail-action>.btn{width:auto;min-width:210px;max-width:100%}
+#modal .learning-detail-modal .learning-detail-action .actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+#modal .learning-detail-modal .learning-detail-action .actions>.notice{margin:0}
+#modal .learning-detail-modal .learning-accordion{min-width:0}
+#modal .learning-detail-modal .learning-accordion-body{overflow-wrap:anywhere}
+@media(max-width:700px){
+ #modal:has(.learning-detail-modal){padding:8px;place-items:center}
+ #modal .modal:has(.learning-detail-modal){width:calc(100vw - 16px);height:calc(100dvh - 16px);max-height:calc(100dvh - 16px);border-radius:18px}
+ #modal .modal:has(.learning-detail-modal)>.learning-detail-modal{border-radius:18px}
+ #modal .learning-detail-modal .learning-detail-hero{padding:17px 16px 15px}
+ #modal .learning-detail-modal .learning-detail-hero-copy{grid-template-columns:44px minmax(0,1fr);gap:11px;margin:14px 0}
+ #modal .learning-detail-modal .learning-detail-stamp{width:44px;height:44px;border-radius:12px;font-size:16px}
+ #modal .learning-detail-modal .learning-detail-hero h2{font-size:clamp(21px,6vw,29px);overflow-wrap:anywhere}
+ #modal .learning-detail-modal .learning-detail-hero-copy p{font-size:13px;line-height:1.5}
+ #modal .learning-detail-modal .learning-detail-content{padding:12px 12px 0;gap:9px}
+ #modal .learning-detail-modal .learning-detail-action{padding:11px 0 13px}
+ #modal .learning-detail-modal .learning-detail-action>.btn{width:100%;min-width:0}
+ #modal .learning-detail-modal .learning-detail-action .actions{display:grid;grid-template-columns:1fr}
+}
