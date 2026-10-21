@@ -668,3 +668,57 @@ body.dark-mode .btn.orange{background:#ff5a00;border-color:#ff5a00;color:#090909
 .case-lab-text-section .case-lab-section-body h3{display:none}
 .case-lab-text-section .case-lab-section-body p{max-width:none;color:#4f5d67;font-size:15px;line-height:1.9;white-space:normal;overflow-wrap:anywhere}
 @media(max-width:700px){.case-lab-modal{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:18px}.case-lab-modal-top{padding:20px 20px 22px}.case-lab-detail-grid{padding:0 20px 28px}.case-lab-files{grid-template-columns:minmax(0,1fr)}.case-lab-text-section{padding:19px 0 21px}.case-lab-text-section .case-lab-section-body p{font-size:14px}}
+
+/* FINAL FIX: keep Case Lab detail inside the platform modal and prevent horizontal clipping */
+#modal .modal:has(.case-lab-modal){
+  width:min(1000px,calc(100vw - 32px))!important;
+  max-width:1000px!important;
+  min-width:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  display:block!important;
+}
+#modal .case-lab-modal{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  max-height:calc(100dvh - 40px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  border-radius:24px;
+}
+#modal .case-lab-modal,
+#modal .case-lab-modal *{
+  box-sizing:border-box;
+}
+#modal .case-lab-modal-top,
+#modal .case-lab-detail-grid,
+#modal .case-lab-text-content,
+#modal .case-lab-detail-section,
+#modal .case-lab-files-section,
+#modal .case-lab-file,
+#modal .case-lab-file-copy{
+  min-width:0!important;
+  max-width:100%;
+}
+#modal .case-lab-modal-top h2,
+#modal .case-lab-modal-top p,
+#modal .case-lab-section-body,
+#modal .case-lab-section-body p,
+#modal .case-lab-file-copy b{
+  overflow-wrap:anywhere!important;
+  word-break:normal;
+}
+#modal .case-lab-files{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  min-width:0;
+}
+@media(max-width:700px){
+  #modal .modal:has(.case-lab-modal){width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important}
+  #modal .case-lab-modal{max-height:calc(100dvh - 16px)!important;border-radius:18px}
+  #modal .case-lab-modal-top{padding:20px 20px 22px}
+  #modal .case-lab-detail-grid{padding:0 20px 28px}
+  #modal .case-lab-files{grid-template-columns:minmax(0,1fr)!important}
+}
