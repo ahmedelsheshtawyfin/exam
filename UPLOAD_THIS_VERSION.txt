@@ -1,4 +1,6 @@
-Updated source package: course curriculum resources + YouTube player fix (2026-10-21).
+Updated source package: Unified final exams and certificates for Courses, Challenges, Case Studies, and Skill Assessments (2026-10-22).
 
-IMPORTANT: Before deploying, apply migrations/0018_course_resources_module.sql once to the production D1 database. Then deploy src/worker.js and public/.
-See COURSE_CURRICULUM_VIDEO_FIX_2026-10-21.md for details.
+IMPORTANT: Before deployment, apply migrations/0019_learning_final_exams.sql to the production D1 database. Run `npm run db:migrate:remote`, then `npm run deploy`.
+
+Use Admin → Exams → Link Learning Exams to associate an exam with a Course, Challenge, or Case Study and set the allowed attempts. 0 means unlimited attempts. The shared printable certificate is issued only after a passing exam result.
+See UNIFIED_LEARNING_EXAMS_CERTIFICATES_UPDATE_2026-10-22.md for details.
