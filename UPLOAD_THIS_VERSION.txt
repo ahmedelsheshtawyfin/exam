@@ -1,4 +1,6 @@
-Updated source package: course curriculum resources + YouTube player fix (2026-10-21).
+This archive includes the AE Badge System update.
 
-IMPORTANT: Before deploying, apply migrations/0018_course_resources_module.sql once to the production D1 database. Then deploy src/worker.js and public/.
-See COURSE_CURRICULUM_VIDEO_FIX_2026-10-21.md for details.
+Before deploying, apply the new D1 migrations 0019_learning_badges.sql and 0020_learning_certificate_sources.sql to the existing DB binding named DB, then deploy the Worker.
+
+Read BADGE_SYSTEM_UPDATE.md for implementation details and deployment commands.
+The existing certificate issuance and email flow is retained.
